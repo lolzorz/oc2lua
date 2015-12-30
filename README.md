@@ -1,33 +1,34 @@
-#oc2lua
+# oc2lua
 
-A lightweight html page,convert objective-c code to lua.
-Just focus on objective-c instead of lua's crazy grammar.
-Thanks to [sherlock](https://github.com/sherlock917/node-online) for the css template.
+A lightweight objective-c-to-lua converter written in javascript. It focuses only on objective-c instead of lua's crazy grammar.
 
 How to use
 ----------
 
-It's easy to use,just copy your objective-c code,
-and press "convert",
-just copy it.
+It's easy to use.
+
+1. `clone` or `download` this project
+2. run `oc2lua-beta.html` in your browser
+3. copy your objective-c code to the left textbox
+4. press `convert`
+5. the converted lua code will appear on the right textbox.
 
 Block?
 ----------
 
-Of course,but maybe you should modify it,
-because this is suit for [alibaba's wax framework](http://github.com/alibaba/wax).
+Of course, but in order to be compatible with [alibaba's wax framework](http://github.com/alibaba/wax), a little modification is required.
 
 But
 ----------
-It isn't perfact yet.
+It's not perfect yet.
 
-* You'd better not to write C-function
+* C-style functions are not recommended
 
-* You'd can only use such for loop grammar
+* You can only use `for` for loops
 
-* Can not convert NSString yet, and I think you'd better add string by hand after converting. Because some complex string may interference the regular expressions to convert.
+* `NSString` is not supported yet, because some complex strings may interfere regular expressions during conversion, you should add strings manually after your code is converted.
 
-* Can not convert BOOL yet, but commint soon.:)
+* `BOOL` is not supported yet, but coming soon. :)
 
 ``` c
 for(type name = value1; name < value2; type++) {
@@ -41,4 +42,8 @@ for(type *value in array) {
 }
 ```
 
-* Not support If yet, but comming soon.:)
+* `if` is also not supported yet, but comming soon too. :)
+
+Special Thanks
+----------
+Thank [sherlock](https://github.com/sherlock917/node-online) for his front-end styles.
