@@ -1,6 +1,7 @@
 #oc2lua
-----------
+
 a lightweight html page,convert objective-c code to lua.
+Just focus on objective-c instead of lua's crazy grammar.
 
 How to use
 ----------
@@ -8,6 +9,12 @@ How to use
 It's easy to use,just copy your objective-c code,
 and press "convert",
 just copy it.
+
+Block?
+----------
+
+Of course,but maybe you should modify it,
+because this is suit for [alibaba's wax framework](http://github.com/alibaba/wax).
 
 But
 ----------
