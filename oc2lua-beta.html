@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+  <title>OC2Lua</title>
+  <link rel="stylesheet" href="./css/layout.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <script src="./js/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+
+  <section id="editor">
+    <h1>Objective-C</h1>
+    <textarea id="input" autofocus="true"></textarea>
+    <div class="div-button">
+      <button class="button" onclick="convertText()">Convert</button>
+    </div>
+  </section>
+
+  <section id="console">
+    <h1 class='output-title'>Lua</h1>
+    <textarea id="output" autofocus="false"></textarea>
+    <div class="div-button">
+      <button class="button" onclick="clearText()">Clear</button>
+    </div>
+  </section>
+
+  <script src="./js/convert-util.js"></script>
+</body>
+</html>

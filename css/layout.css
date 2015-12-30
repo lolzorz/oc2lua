@@ -1,0 +1,21 @@
+@font-face {
+  font-family: consola;
+  src: url('consola.ttf');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: none;
+  list-style: none;
+  text-decoration: none;
+
+  font-family: consola, '微软雅黑', sans-serif;
+  font-weight: 100;
+  color: #fff;
+  background: #000;
+
+  transition: background 0.3s, color 0.3s;
+}

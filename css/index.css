@@ -1,0 +1,60 @@
+#editor,
+#console {
+  width: 50%;
+  height: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  padding: 1em;
+  border-right: 1px solid #fff;
+}
+
+#editor {
+  left: 0;
+}
+
+#console {
+  right: 0;
+}
+
+#input,
+#output {
+  width: 80%;
+  height: 70%;
+  display: block;
+  padding: 1em;
+  margin: 1em auto;
+  border: 1px solid #fff;
+  font-size: 1em;
+  resize: none;
+}
+
+#file-name {
+  width: 80%;
+  height: 40px;
+  display: block;
+  padding: 0 1em 0 1em;
+  margin: 1em auto;
+  border: 1px solid #fff;
+  font-size: 1em;
+  resize: none;
+  text-align: center;
+}
+
+.button-row {
+  text-align: center;
+}
+
+.button {
+  width: 6em;
+  height: 3em;
+  margin: 1em auto;
+  background: #000;
+  color: #fff;
+  border: 0.1em solid #fff;
+  cursor: pointer;
+}
+
+.div-button {
+  text-align: center;
+}
