@@ -1,6 +1,6 @@
 #oc2lua
 
-a lightweight html page,convert objective-c code to lua.
+A lightweight html page,convert objective-c code to lua.
 Just focus on objective-c instead of lua's crazy grammar.
 
 How to use
@@ -25,10 +25,10 @@ It isn't perfact yet.
 * You'd can only use such for loop grammar
 
 ``` c
-for(type name = value1; type < value2; type++) {
+for(type name = value1; name < value2; type++) {
 	
 }
-for(type name = value1; type < value2; type--) {
+for(type name = value1; name < value2; type--) {
 	
 }
 for(type *value in array) {
