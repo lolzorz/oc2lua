@@ -392,7 +392,6 @@ function convertVar(src) {
     var result = src;
     var matchedVar = result.match(/[a-zA-Z_][a-zA-Z0-9_]*[ \*]{1,}[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g);
     if(matchedVar) {
-            console.log(matchedVar);
         for(var i = 0; i < matchedVar.length; i++) {
             var aVar = matchedVar[i];
             var varResult = aVar.slice(0, aVar.length - 2);
@@ -412,8 +411,19 @@ function convertVar(src) {
 //convert "self.view"
 //->
 //"self:view()"
+//
+//convert "self.view = a"
+//->
+//"self:setView(a)"
 function convertDotGrammar(src) {
     var result = src;
+    var matchedDotSets = matchedDotSet(result);
+    if(matchedDotSets) {
+        for(var i = 0; i < matchedDotSets.length; i++) {
+            var aDotSet = matchedDotSets[i];
+            result = result.replace(aDotSet, convertADotSet(aDotSet));
+        }
+    }
     var matchedDot = result.match(/\.[a-zA-Z_][a-zA-Z0-9_]*/g);
     if(matchedDot) {
         for(var i = 0; i < matchedDot.length; i++) {
@@ -424,6 +434,72 @@ function convertDotGrammar(src) {
         }
     }
     return result;
+}
+
+function matchedDotSet(src) {
+    var tmpSrc = src;
+    var allDotSets = new Array();
+    while(tmpSrc.match(/\.[a-zA-Z_][a-zA-Z0-9_]* *=/g)) {
+        var index = tmpSrc.search(/\.[a-zA-Z_][a-zA-Z0-9_]* *=/g);
+        var aDotSet = "";
+        var needRight1 = 0;
+        var needRight2 = 0;
+        var needRight3 = 0;
+        var end = false;
+        for(var i = index; i < tmpSrc.length; i++) {
+            var c = tmpSrc.charAt(i);
+            aDotSet = aDotSet + c;
+            switch (c) {
+                case '{': {
+                    needRight1++;
+                }
+                break;
+                case '}': {
+                    needRight1--;
+                }
+                break;
+                case '(': {
+                    needRight2++;
+                }
+                break;
+                case ')': {
+                    needRight2--;
+                }
+                break;
+                case '[': {
+                    needRight3++;
+                }
+                break;
+                case ']': {
+                    needRight3--;
+                }
+                break;
+                case ';': {
+                    if(needRight1 == 0 && needRight2 == 0 && needRight3 == 0) {
+                        end = true;
+                    }
+                }
+            }
+            if(end) {
+                tmpSrc = tmpSrc.slice(i, tmpSrc.length);
+                break;
+            }
+        }
+        allDotSets.push(aDotSet);
+    }
+    return allDotSets;
+}
+
+function convertADotSet(dotSet) {
+    var setMethod = dotSet.search(/=/g);
+    var setValue = dotSet.slice(setMethod + 1, dotSet.length);
+    setMethod = dotSet.slice(1, setMethod);
+    setMethod = setMethod.trim();
+    var firstC = setMethod.slice(0,1);
+    firstC = firstC.toUpperCase();
+    setMethod = setMethod.slice(1, setMethod.length);
+    setMethod = ":set" + firstC + setMethod + "(" + setValue.trim() + ")";
+    return setMethod;
 }
 
 function convertForLoop(src) {
