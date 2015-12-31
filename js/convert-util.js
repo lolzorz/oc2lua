@@ -28,13 +28,13 @@ $('#input').on('keydown', function (e) {
 //start
 function convertToLua(src) {
     var result = " " + src;
-    result = removeRemark(result);
 
     //temporary replace NSString
     var allNsstrings = nsstringArrayInCode(result);
     for(var i = 0; i < allNsstrings.length; i++) {
         result = result.replace(allNsstrings[i], "#s#" + i + "#s#");
     }
+    result = removeRemark(result);
 
     result = convertMethodCall(result);
     result = convertBlockToAliWax(result);
@@ -174,6 +174,7 @@ function methodToLua(src) {
     aSrc = aSrc.replace(/ {2,}/g, ' ');
 
     var caller = aSrc.match(/\[[^ ]* /g);
+    console.log(aSrc);
     caller = caller[0];
     caller = caller.slice(1, caller.length - 1);
     var result = caller + ":";
