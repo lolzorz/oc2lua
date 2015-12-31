@@ -35,13 +35,13 @@ But
 ----------
 It's not perfect yet.
 
-* Quick operation of `NSDictionary` and `NSArray` are not support. Like these:
+* Quick operation of `NSDictionary` and `NSArray` are not supported:
 
 ``` objective-c
 NSMutableArray *arr;
 NSMutableDictionary *dic;
 
-//these operation are not support:
+//these operation are not supported:
 id obj1 = arr[1];
 id obj2 = dic[@"objkey1"];
 dic[@"objkey2"] = obj1;
