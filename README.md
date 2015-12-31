@@ -16,8 +16,7 @@ It's easy to use.
 Update
 ----------
 
-Dec 31, 2015
----
+#### Dec 31, 2015
 
 * Support NSString now.
 
