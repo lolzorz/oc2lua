@@ -38,12 +38,14 @@ function convertToLua(src) {
     result = convertMethodCall(result);
     result = convertBlockToAliWax(result);
     result = convertCodeFormat(result);
-    result = result.replace(/;/g, "");
+    result = convertOtherToLua(result);
 
     for(var i = 0; i < allNsstrings.length; i++) {
         var aString = allNsstrings[i];
         result = result.replace("#s#" + i + "#s#", aString.slice(1, aString.length));
     }
+
+    result = result.slice(1, result.length);
 
     tf_output.value = result;
 }
@@ -436,6 +438,7 @@ function convertDotGrammar(src) {
     return result;
 }
 
+//match all ".name = value;"
 function matchedDotSet(src) {
     var tmpSrc = src;
     var allDotSets = new Array();
@@ -525,6 +528,7 @@ function convertForLoop(src) {
 //but only support some specify format
 //for(var name = value;name <=> aValue;name++--)
 //for(id x in y)
+var forCount = 0;
 function convertAForLoop(forloop) {
     var result = "for ";
     var fullHeader = forloop.match(/for *\([^{]*{/g);
@@ -568,7 +572,7 @@ function convertAForLoop(forloop) {
         var header2 = headers[1];
         header2 = header2.trim();
 
-        result = result + "luaforloopindex = 0," + header2 + ":count()," + "1 do\nlocal " + header1 + " = " + header2 + ":objectAtIndex(luaforloopindex)\n" + body + "end";
+        result = result + "luaforloopindex" + forCount + " = 0," + header2 + ":count()," + "1 do local " + header1 + " = " + header2 + ":objectAtIndex(luaforloopindex" + forCount++ + ") " + body + "end";
     }
     return result;
 }
@@ -609,4 +613,32 @@ function matchedForLoop(src) {
 }
 
 function matchedIf(src) {
+}
+
+//convert other detail thing to lua
+//such YES/NO
+function convertOtherToLua(src) {
+    var result = src;
+    var allmatched;
+    allmatched = result.match(/[^a-zA-Z0-9_]NO[^a-zA-Z0-9_]/g);
+    if(allmatched) {
+        for(var i = 0; i < allmatched.length; i++) {
+            var aMatched = allmatched[i];
+            var aResult = aMatched.slice(0, 1) + "false" + aMatched.slice(aMatched.length - 1, aMatched.length);
+            result = result.replace(aMatched, aResult);
+        }
+    }
+
+    allmatched = result.match(/[^a-zA-Z0-9_]YES[^a-zA-Z0-9_]/g);
+    if(allmatched) {
+        for(var i = 0; i < allmatched.length; i++) {
+            var aMatched = allmatched[i];
+            var aResult = aMatched.slice(0, 1) + "true" + aMatched.slice(aMatched.length - 1, aMatched.length);
+            result = result.replace(aMatched, aResult);
+        }
+    }
+
+    result = result.replace(/;/g, "");
+
+    return result;
 }
