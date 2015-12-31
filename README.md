@@ -22,6 +22,8 @@ Update
 
 * Support `BOOL` now.
 
+* Support `if` now.
+
 * `.` grammar bug fixed.
 
 * `for loop` bug fixed.
@@ -62,8 +64,6 @@ for(type *value in array) {
 	
 }
 ```
-
-* `if` is also not supported yet, but comming soon too. :)
 
 Special Thanks
 ----------

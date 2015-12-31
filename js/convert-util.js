@@ -384,6 +384,7 @@ function convertCodeFormat(src) {
     result = convertVar(result);
     result = convertDotGrammar(result);
     result = convertForLoop(result);
+    result = convertIf(result);
     return result;
 }
 
@@ -612,7 +613,104 @@ function matchedForLoop(src) {
     return allForLoops;
 }
 
-function matchedIf(src) {
+function convertIf(src) {
+    var result = src;
+    while(result.match(/if *\([^{]*{/g)) {
+        result = convertAllIf(result);
+    }
+    return result;
+}
+
+//convert all outer if
+function convertAllIf(src) {
+    var result = "";
+    var tmpSrc = src;
+    while(tmpSrc.match(/if *\([^{]*{/g)) {
+        var currentIndex = tmpSrc.search(/if *\([^{]*{/g);
+        result = result + tmpSrc.slice(0, currentIndex);
+        var needRight = 0;
+        var end = false;
+        var ifBody = "";
+        for(var i = currentIndex; i < tmpSrc.length; i++) {
+            var c = tmpSrc.charAt(i);
+            ifBody = ifBody + c;
+            switch (c) {
+                case '{': {
+                    needRight++;
+                }
+                break;
+                case '}': {
+                    needRight--;
+                    if(needRight == 0) {
+                        end = true;
+                    }
+                }
+                break;
+            }
+            if(end) {
+                tmpSrc = tmpSrc.slice(i + 1, tmpSrc.length);
+                var fullHeader = ifBody.match(/if *\([^{]*{/g);
+                fullHeader = fullHeader[0];
+                var body = ifBody.slice(fullHeader.length, ifBody.length - 1);
+                var header = fullHeader.match(/\(.*\)/g);
+                header = header[0];
+                header = header.slice(1, header.length - 1);
+                header = header.trim();
+                result = result + "if " + header + " then " + body;
+                break;
+            }
+        }
+        var matchElseIf = tmpSrc.search(/[\n ]*else *if *\([^{]*{/g);
+        var matchElse = tmpSrc.search(/[\n ]*else[\n ]*{/g);
+        while(matchElseIf == 0 || matchElse == 0) {
+            needRight = 0;
+            end = false;
+            ifBody = "";
+            for(var i = 0; i < tmpSrc.length; i++) {
+                var c = tmpSrc.charAt(i);
+                ifBody = ifBody + c;
+                switch (c) {
+                    case '{': {
+                        needRight++;
+                    }
+                    break;
+                    case '}': {
+                        needRight--;
+                        if(needRight == 0) {
+                            end = true;
+                        }
+                    }
+                    break;
+                }
+                if(end) {
+                    tmpSrc = tmpSrc.slice(i + 1, tmpSrc.length);
+                    var fullHeader;
+                    if(matchElseIf == 0) {
+                        fullHeader = ifBody.match(/[\n ]*else *if *\([^{]*{/g);
+                    } else {
+                        fullHeader = ifBody.match(/[\n ]*else[\n ]*{/g);
+                    }
+                    fullHeader = fullHeader[0];
+                    var body = ifBody.slice(fullHeader.length, ifBody.length - 1);
+                    if(matchElseIf == 0) {
+                        var header = fullHeader.match(/\(.*\)/g);
+                        header = header[0];
+                        header = header.slice(1, header.length - 1);
+                        header = header.trim();
+                        result = result + "elseif " + header + " then " + body;
+                    } else {
+                        result = result + "else " + body;
+                    }
+                    break;
+                }
+            }
+            matchElseIf = tmpSrc.search(/[\n ]*else *if *\([^{]*{/g);
+            matchElse = tmpSrc.search(/[\n ]*else[\n ]*{/g);
+        }
+        result = result + "end";
+    }
+    result = result + tmpSrc;
+    return result;
 }
 
 //convert other detail thing to lua
