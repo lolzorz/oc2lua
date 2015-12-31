@@ -28,6 +28,7 @@ $('#input').on('keydown', function (e) {
 //start
 function convertToLua(src) {
     var result = " " + src;
+    result = removeRemark(result);
 
     //temporary replace NSString
     var allNsstrings = nsstringArrayInCode(result);
@@ -50,7 +51,57 @@ function convertToLua(src) {
     tf_output.value = result;
 }
 
+//remove remark 
+// // and /* */
+function removeRemark(code) {
+    console.log("=====================removeRemark=====================");
+    var result = code.slice(0, 1);
+    var inLineRemark = false;
+    var inAreaRemark = false;
+    var lastC = code.charAt(0);
+    for(var i = 1; i < code.length; i++) {
+        var c = code.charAt(i);
+        if(!inLineRemark && !inAreaRemark) {
+            result = result + c;
+        }
+        switch(c) {
+            case '/':{
+                if(!inLineRemark && !inAreaRemark) {
+                    if(lastC == '/') {
+                        inLineRemark = true;
+                        result = result.slice(0, result.length - 2);
+                    }
+                } else if(inAreaRemark) {
+                    if(lastC == '*') {
+                        inAreaRemark = false;
+                    }
+                }
+            }
+            break;
+            case '*':{
+                if(!inLineRemark && !inAreaRemark) {
+                    if(lastC == '/') {
+                        inAreaRemark = true;
+                        result = result.slice(0, result.length - 2);
+                    }
+                }
+            }
+            break;
+            case '\n':{
+                if(inLineRemark) {
+                    inLineRemark = false;
+                    result = result + '\n';
+                }
+            }
+            break;
+        }
+        lastC = c;
+    }
+    return result;
+}
+
 function nsstringArrayInCode(code) {
+    console.log("=====================nsstringArrayInCode=====================");
     var stringArray = new Array();
     var lastC = code.charAt(0);
     var aString = "";
@@ -86,6 +137,7 @@ function nsstringArrayInCode(code) {
 //it's not supposed to modify
 //================================================================
 function convertMethodCall(src) {
+    console.log("=====================convertMethodCall=====================");
     var result = src;
     //while is to convert oc method call to lua
     //the reg only match the method which don't have inner call
@@ -106,6 +158,7 @@ function convertMethodCall(src) {
 
 //convert a method call
 function methodToLua(src) {
+    console.log("=====================methodToLua=====================");
     var aSrc = src;
 
     //replace block params into some unique character
@@ -191,6 +244,7 @@ function methodToLua(src) {
 
 //Not use it yet.It's for support c-function call.
 function callerOfTheMethod(method) {
+    console.log("=====================callerOfTheMethod=====================");
     var caller = "";
     var needRight = 0;
     var start = false;
@@ -238,6 +292,7 @@ function callerOfTheMethod(method) {
 //but both only return the outer block
 //return array of block params
 function paramArrayInMethod(method) {
+    console.log("=====================paramArrayInMethod=====================");
     var resultArray = new Array();
     var needRightMid = 0;
     var isInParam = false;
@@ -292,6 +347,7 @@ function paramArrayInMethod(method) {
 //it should modify by ur self
 //================================================================
 function convertBlockToAliWax(src) {
+    console.log("=====================convertBlockToAliWax=====================");
     var result = src;
     while(result.match(/\^[^{]*{/g)) {
         var blocks = paramArrayInMethod(result);
@@ -317,6 +373,7 @@ returnType["void"] = "void";
 
 //it's for alibaba's wax
 function convertABlock(block) {
+    console.log("=====================convertABlock=====================");
     block = block.trim();
     var blockHeader = block.match(/\^[^{]*{/g);
     blockHeader = blockHeader[0];
@@ -368,6 +425,7 @@ function convertABlock(block) {
 }
 
 function convertType(type) {
+    console.log("=====================convertType=====================");
     if(returnType[type]) {
         return returnType[type];
     }
@@ -380,6 +438,7 @@ function convertType(type) {
 //it should be added more case
 //================================================================
 function convertCodeFormat(src) {
+    console.log("=====================convertCodeFormat=====================");
     var result = src;
     result = convertVar(result);
     result = convertDotGrammar(result);
@@ -392,6 +451,7 @@ function convertCodeFormat(src) {
 //->
 //"local str = "
 function convertVar(src) {
+    console.log("=====================convertVar=====================");
     var result = src;
     var matchedVar = result.match(/[a-zA-Z_][a-zA-Z0-9_]*[ \*]{1,}[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g);
     if(matchedVar) {
@@ -419,6 +479,7 @@ function convertVar(src) {
 //->
 //"self:setView(a)"
 function convertDotGrammar(src) {
+    console.log("=====================convertDotGrammar=====================");
     var result = src;
     var matchedDotSets = matchedDotSet(result);
     if(matchedDotSets) {
@@ -441,9 +502,10 @@ function convertDotGrammar(src) {
 
 //match all ".name = value;"
 function matchedDotSet(src) {
+    console.log("=====================matchedDotSet=====================");
     var tmpSrc = src;
     var allDotSets = new Array();
-    while(tmpSrc.match(/\.[a-zA-Z_][a-zA-Z0-9_]* *=/g)) {
+    while(tmpSrc.match(/\.[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g)) {
         var index = tmpSrc.search(/\.[a-zA-Z_][a-zA-Z0-9_]* *=/g);
         var aDotSet = "";
         var needRight1 = 0;
@@ -495,6 +557,7 @@ function matchedDotSet(src) {
 }
 
 function convertADotSet(dotSet) {
+    console.log("=====================convertADotSet=====================");
     var setMethod = dotSet.search(/=/g);
     var setValue = dotSet.slice(setMethod + 1, dotSet.length);
     setMethod = dotSet.slice(1, setMethod);
@@ -507,6 +570,7 @@ function convertADotSet(dotSet) {
 }
 
 function convertForLoop(src) {
+    console.log("=====================convertForLoop=====================");
     var result = src;
 
     while(result.match(/for[^{]*{/g)) {
@@ -531,6 +595,7 @@ function convertForLoop(src) {
 //for(id x in y)
 var forCount = 0;
 function convertAForLoop(forloop) {
+    console.log("=====================convertAForLoop=====================");
     var result = "for ";
     var fullHeader = forloop.match(/for *\([^{]*{/g);
     fullHeader = fullHeader[0];
@@ -580,6 +645,7 @@ function convertAForLoop(forloop) {
 
 //find out all outer for loop
 function matchedForLoop(src) {
+    console.log("=====================matchedForLoop=====================");
     var tmpSrc = src;
     var allForLoops = new Array();
     while(tmpSrc.match(/for *\([^{]*{/g)) {
@@ -614,6 +680,7 @@ function matchedForLoop(src) {
 }
 
 function convertIf(src) {
+    console.log("=====================convertIf=====================");
     var result = src;
     while(result.match(/if *\([^{]*{/g)) {
         result = convertAllIf(result);
@@ -623,6 +690,7 @@ function convertIf(src) {
 
 //convert all outer if
 function convertAllIf(src) {
+    console.log("=====================convertAllIf=====================");
     var result = "";
     var tmpSrc = src;
     while(tmpSrc.match(/if *\([^{]*{/g)) {
@@ -716,6 +784,7 @@ function convertAllIf(src) {
 //convert other detail thing to lua
 //such YES/NO
 function convertOtherToLua(src) {
+    console.log("=====================convertOtherToLua=====================");
     var result = src;
     var allmatched;
     allmatched = result.match(/[^a-zA-Z0-9_]NO[^a-zA-Z0-9_]/g);
