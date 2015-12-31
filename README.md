@@ -2,13 +2,6 @@
 
 A lightweight objective-c-to-lua converter written in javascript. It focuses only on objective-c instead of lua's crazy grammar.
 
-What's new in Dec 31, 2015
-----------
-
-* Support NSString now.
-
-* Dot grammar bug fix.
-
 How to use
 ----------
 
@@ -19,6 +12,13 @@ It's easy to use.
 3. copy your objective-c code to the left textbox
 4. press `convert`
 5. the converted lua code will appear on the right textbox.
+
+### What's new in Dec 31, 2015
+----------
+
+* Support NSString now.
+
+* Dot grammar bug fix.
 
 Block?
 ----------
