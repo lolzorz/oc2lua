@@ -28,11 +28,55 @@ $('#input').on('keydown', function (e) {
 //start
 function convertToLua(src) {
     var result = " " + src;
+
+    //temporary replace NSString
+    var allNsstrings = nsstringArrayInCode(result);
+    for(var i = 0; i < allNsstrings.length; i++) {
+        result = result.replace(allNsstrings[i], "#s#" + i + "#s#");
+    }
+
     result = convertMethodCall(result);
     result = convertBlockToAliWax(result);
     result = convertCodeFormat(result);
     result = result.replace(/;/g, "");
+
+    for(var i = 0; i < allNsstrings.length; i++) {
+        var aString = allNsstrings[i];
+        result = result.replace("#s#" + i + "#s#", aString.slice(1, aString.length));
+    }
+
     tf_output.value = result;
+}
+
+function nsstringArrayInCode(code) {
+    var stringArray = new Array();
+    var lastC = code.charAt(0);
+    var aString = "";
+    var start = false;
+    for(var i = 1; i < code.length; i++) {
+        var c = code.charAt(i);
+        if(c == '"') {
+            if(start) {
+                aString = aString + c;
+                if(lastC != '\\') {
+                    start = false;
+                    stringArray.push(aString);
+                    aString = "";
+                }
+            } else {
+                if(lastC == '@') {
+                    start = true;
+                    aString = "@\"";
+                }
+            }
+        } else {
+            if(start) {
+                aString = aString + c;
+            }
+        }
+        lastC = c;
+    }
+    return stringArray;
 }
 
 //================================================================
@@ -346,8 +390,9 @@ function convertCodeFormat(src) {
 //"local str = "
 function convertVar(src) {
     var result = src;
-    var matchedVar = result.match(/[a-zA-Z_][a-zA-Z0-9_]*[ \*]*[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g);
+    var matchedVar = result.match(/[a-zA-Z_][a-zA-Z0-9_]*[ \*]{1,}[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g);
     if(matchedVar) {
+            console.log(matchedVar);
         for(var i = 0; i < matchedVar.length; i++) {
             var aVar = matchedVar[i];
             var varResult = aVar.slice(0, aVar.length - 2);

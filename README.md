@@ -2,6 +2,13 @@
 
 A lightweight objective-c-to-lua converter written in javascript. It focuses only on objective-c instead of lua's crazy grammar.
 
+What's new in Dec 31, 2015
+----------
+
+* Support NSString now.
+
+* Dot grammar bug fix.
+
 How to use
 ----------
 
