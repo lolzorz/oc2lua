@@ -13,8 +13,11 @@ It's easy to use.
 4. press `convert`
 5. the converted lua code will appear on the right textbox.
 
-### What's new in Dec 31, 2015
+Update
 ----------
+
+Dec 31, 2015
+---
 
 * Support NSString now.
 
