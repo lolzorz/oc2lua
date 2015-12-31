@@ -174,7 +174,6 @@ function methodToLua(src) {
     aSrc = aSrc.replace(/ {2,}/g, ' ');
 
     var caller = aSrc.match(/\[[^ ]* /g);
-    console.log(aSrc);
     caller = caller[0];
     caller = caller.slice(1, caller.length - 1);
     var result = caller + ":";
@@ -507,7 +506,7 @@ function matchedDotSet(src) {
     var tmpSrc = src;
     var allDotSets = new Array();
     while(tmpSrc.match(/\.[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g)) {
-        var index = tmpSrc.search(/\.[a-zA-Z_][a-zA-Z0-9_]* *=/g);
+        var index = tmpSrc.search(/\.[a-zA-Z_][a-zA-Z0-9_]* *=[^=]/g);
         var aDotSet = "";
         var needRight1 = 0;
         var needRight2 = 0;
