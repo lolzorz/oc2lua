@@ -35,11 +35,23 @@ But
 ----------
 It's not perfect yet.
 
+* Quick operation of `NSDictionary` and `NSArray` are not support. Like these:
+
+``` objective-c
+NSMutableArray *arr;
+NSMutableDictionary *dic;
+
+//these operation are not support:
+id obj1 = arr[1];
+id obj2 = dic[@"objkey1"];
+dic[@"objkey2"] = obj1;
+```
+
 * C-style functions are not recommended
 
 * You can only use `for` for loops like these:
 
-``` c
+``` objective-c
 for(type name = value1; name < value2; type++) {
 	
 }
