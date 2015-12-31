@@ -724,7 +724,7 @@ function convertAllIf(src) {
                 header = header[0];
                 header = header.slice(1, header.length - 1);
                 header = header.trim();
-                result = result + "if " + header + " then " + body;
+                result = result + "if " + convertIfHeader(header) + " then " + body;
                 break;
             }
         }
@@ -765,7 +765,7 @@ function convertAllIf(src) {
                         header = header[0];
                         header = header.slice(1, header.length - 1);
                         header = header.trim();
-                        result = result + "elseif " + header + " then " + body;
+                        result = result + "elseif " + convertIfHeader(header) + " then " + body;
                     } else {
                         result = result + "else " + body;
                     }
@@ -778,6 +778,18 @@ function convertAllIf(src) {
         result = result + "end";
     }
     result = result + tmpSrc;
+    return result;
+}
+
+//convert "!text && i != 1 || b == c"
+//->
+//"~text and i ~= 1 or b == c"
+function convertIfHeader(ifHeader) {
+    console.log("=====================convertIfHeader=====================");
+    var result = ifHeader;
+    result = result.replace(/&&/g, "and");
+    result = result.replace(/\|\|/g, "or");
+    result = result.replace(/!/g, "~");
     return result;
 }
 
