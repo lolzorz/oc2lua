@@ -33,8 +33,6 @@ It's not perfect yet.
 
 * C-style functions are not recommended
 
-* `NSString` is not supported yet, because some complex strings may interfere regular expressions during conversion, you should add strings manually after your code is converted.
-
 * `BOOL` is not supported yet, but coming soon. :)
 
 * You can only use `for` for loops like these:
