@@ -18,9 +18,13 @@ Update
 
 #### Dec 31, 2015
 
-* Support NSString now.
+* Support `NSString` now.
 
-* Dot grammar bug fix.
+* Support `BOOL` now.
+
+* `.` grammar bug fixed.
+
+* `for loop` bug fixed.
 
 Block?
 ----------
@@ -32,8 +36,6 @@ But
 It's not perfect yet.
 
 * C-style functions are not recommended
-
-* `BOOL` is not supported yet, but coming soon. :)
 
 * You can only use `for` for loops like these:
 
