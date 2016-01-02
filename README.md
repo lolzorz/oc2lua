@@ -16,6 +16,10 @@ It's easy to use.
 Update
 ----------
 
+#### Jan 2, 2016
+
+* Support `C` function now.
+
 #### Dec 31, 2015
 
 * Support `NSString` now.
@@ -48,8 +52,6 @@ id obj1 = arr[1];
 id obj2 = dic[@"objkey1"];
 dic[@"objkey2"] = obj1;
 ```
-
-* C-style functions are not recommended
 
 * You can only use `for` for loops like these:
 

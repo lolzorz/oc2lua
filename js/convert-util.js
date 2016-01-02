@@ -35,7 +35,7 @@ function convertToLua(src) {
         result = result.replace(allNsstrings[i], "#s#" + i + "#s#");
     }
     result = removeRemark(result);
-
+    result = preconvertCFunction(result);
     result = convertMethodCall(result);
     result = convertBlockToAliWax(result);
     result = convertCodeFormat(result);
@@ -97,6 +97,14 @@ function removeRemark(code) {
         }
         lastC = c;
     }
+    return result;
+}
+
+function preconvertCFunction(code) {
+    var result = code;
+
+    result = result.replace(/ *, */g, ",");
+
     return result;
 }
 
