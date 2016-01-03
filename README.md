@@ -16,6 +16,10 @@ It's easy to use.
 Update
 ----------
 
+#### Jan 3, 2016
+
+* Add convert error alert.
+
 #### Jan 2, 2016
 
 * Support `C` function now.

@@ -1,6 +1,21 @@
 var tf_output = document.getElementById('output');
 var tf_input = document.getElementById('input');
 var tab_insert = 2;
+var orgSrc = "";
+
+function alertError(errorSrc) {
+    var tmpSrc = orgSrc;
+    tmpSrc = tmpSrc.replace(errorSrc, "#error convert#");
+    var srcIndex = tmpSrc.search(/#error convert#/g);
+    var errorLine = 1;
+    for(var i = 0; i < srcIndex; i++) {
+            var c = orgSrc.charAt(i);
+            if(c == '\n') {
+                errorLine++;
+            }
+        }
+    alert("Parse method error at line " + errorLine + ":" + errorSrc);
+}
 
 function convertText() {
     var originSrc = tf_input.value;
@@ -27,6 +42,7 @@ $('#input').on('keydown', function (e) {
 
 //start
 function convertToLua(src) {
+    orgSrc = src;
     var result = " " + src;
 
     //temporary replace NSString
@@ -152,6 +168,9 @@ function convertMethodCall(src) {
     //so it would loop for many times
     while(result.match(/[\[\]]/g)) {
         var toBeReplaceArray = result.match(/\[[^\[\]]*\]/g);
+        if(!toBeReplaceArray) {
+            break;
+        }
         if(toBeReplaceArray.length < 1) {
             break;
         }
@@ -182,6 +201,9 @@ function methodToLua(src) {
     aSrc = aSrc.replace(/ {2,}/g, ' ');
 
     var caller = aSrc.match(/\[[^ ]* /g);
+    if(!caller) {
+        alertError(src);
+    }
     caller = caller[0];
     caller = caller.slice(1, caller.length - 1);
     var result = caller + ":";
@@ -232,6 +254,9 @@ function methodToLua(src) {
         }
         reg = new RegExp(reg, "g");
         reg = aSrc.match(reg);
+        if(!reg) {
+            alertError(src);
+        }
         reg = reg[0];
         var aParam = reg.slice(start - 2, reg.length - end);
         if(i != 0) {
