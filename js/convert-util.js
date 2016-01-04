@@ -56,7 +56,9 @@ function convertToLua(src) {
     result = convertBlockToAliWax(result);
     result = convertCodeFormat(result);
     result = convertOtherToLua(result);
+    result = convertDefine(result);
 
+    //recover NSString
     for(var i = 0; i < allNsstrings.length; i++) {
         var aString = allNsstrings[i];
         result = result.replace("#s#" + i + "#s#", aString.slice(1, aString.length));
@@ -199,7 +201,7 @@ function methodToLua(src) {
     //made the method in a single line
     aSrc = aSrc.replace(/\n/g, ' ');
     aSrc = aSrc.replace(/ {2,}/g, ' ');
-
+    aSrc = aSrc.replace(/ *: */g, ':');
     var caller = aSrc.match(/\[[^ ]* /g);
     if(!caller) {
         alertError(src);
@@ -852,5 +854,106 @@ function convertOtherToLua(src) {
 
     result = result.replace(/;/g, "");
 
+    return result;
+}
+
+//convert "- (void)doSomething"
+//->
+//"function doSomething()"
+function convertDefine(src) {
+    console.log("=====================convertDefine=====================");
+    var tmpSrc = src;
+    var result = "";
+    while(tmpSrc.match(/[ \n]{1,}[\+\-][^{]*{/g)) {
+        var index = tmpSrc.search(/[\+\-][^{]*{/g);
+        result = result + tmpSrc.slice(0, index);
+        tmpSrc = tmpSrc.slice(index, tmpSrc.length);
+        var aDefine = "";
+        var i = 0;
+        var shouldAppend = false;
+        var start = false;
+        var needRight = 0;
+        //find method name util {
+        for(i = 0; i < tmpSrc.length; i++) {
+            var c = tmpSrc.charAt(i);
+            if(c == '{') {
+                break;
+            }
+            if(c == '(') {
+                if(!shouldAppend) {
+                    needRight++;
+                    if(!start) {
+                        start = true;
+                    }
+                }
+            }
+            if(c == ')') {
+                if(!shouldAppend) {
+                    needRight--
+                    if(needRight == 0) {
+                        shouldAppend = true;
+                    }
+                }
+            }
+            if(shouldAppend) {
+                if(c != '\n') {
+                    aDefine = aDefine + c;
+                }
+            }
+        }
+        tmpSrc = tmpSrc.slice(i + 1, tmpSrc.length);
+        aDefine = aDefine.slice(1, aDefine.length);
+        aDefine = aDefine.trim();
+        aDefine = aDefine.replace(/ *\* */g, "*");
+        aDefine = aDefine.replace(/ *: */g, ":");
+        var defineBody = aDefine.split(" ");
+        console.log(defineBody);
+        result = result + "function ";
+        var params = "(self";
+        //parse function name to lua
+        for(i = 0; i < defineBody.length; i++) {
+            var aBody = defineBody[i];
+            aBody = aBody.split(":");
+            var body1 = aBody[0];
+            if(i != 0) {
+                result = result + "_";
+            }
+            result = result + body1;
+            if(aBody.length > 1) {
+                var param = aBody[aBody.length - 1];
+                param = param.match(/[a-zA-Z_][a-zA-Z0-9_]*/g);
+                params = params + "," + param[param.length - 1];
+            }
+        }
+        params = params + ")";
+        result = result + params;
+        var end = false;
+        needRight = 1;
+        //copy body until }
+        for(i = 0; i < tmpSrc.length; i++) {
+            var c = tmpSrc.charAt(i);
+            switch (c) {
+                case '{': {
+                    needRight++;
+                }
+                break;
+                case '}': {
+                    needRight--;
+                    if(needRight == 0) {
+                        end = true;
+                    }
+                }
+                break;
+            }
+            if(end) {
+                tmpSrc = tmpSrc.slice(i + 1, tmpSrc.length);
+                result = result + "end";
+                break;
+            } else {
+                result = result + c;
+            }
+        }
+    }
+    result = result + tmpSrc;
     return result;
 }

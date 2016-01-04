@@ -16,6 +16,16 @@ It's easy to use.
 Update
 ----------
 
+#### Jan 4, 2016
+
+* Method convert bug fixed.
+
+* Support convert method define:
+``` objective-c
+- (void)viewDidLoad {
+}
+```
+
 #### Jan 3, 2016
 
 * Add convert error alert.
